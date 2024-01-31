@@ -1,38 +1,48 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+const express = require('express'); 
+const mongoose =require('mongoose');      
+const cors = require('cors');              
+const bodyParser = require('body-parser');  
+const handleRegister = require('./Controllers/Signup');
 const handleLogin = require('./Controllers/Login');
 
-
-const app = express();
-const port = 5000;
-const url = 'mongodb://localhost:27017/ksa'
+require('dotenv').config();
 
 
+const app = express();                      
+const port =  2000; 
+const url = 'mongodb://localhost:27017/Ksa'
 
-app.use(cors);
-app.use(bodyParser.json());
+
+
+app.use(cors());                            
+app.use(bodyParser.json());  
+
 
 
 try {
-    const connect = mongoose.connect(url);
+  const connect = mongoose.connect(url)
 
-    if(connect){
-        console.log('message : Dbconnected ');
-
-    }
-    
-}
-
-catch(error){
-    console.log(error)
+  if (connect) {
+    console.log('message : Dbconnected ')
+  }
+}catch(error)
+{
+console.log (error)
 }
 
 
+
+
+
+
+
+app.post('/signup', handleRegister);
 app.post('/login', handleLogin);
 
 
-app.listen(port, ()=>{
-    console.log(`server is running on port ${url}`)
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
+
+
+

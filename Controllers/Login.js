@@ -3,38 +3,40 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const SecretKey = process.env.SECRET_KEY;
 
-
-
-const handleLogin = async (req, res) =>{
+const handleLogin = async(req, res) => {
     try{
-        const{username, password} = req.body;
-        const isUser = await User.findOne(username);
+        const {username, password} = req.body;
+        const isUser = await User.findOne({username}); 
 
-        if(username !== '' , password !== ''){
+        if(username !== '' && password !== ''){
             if(isUser){
-                const passwordVerify = bcrypt.compare(password, isUser.password);
-                if(passwordVerify){
-                    const token = jwt.sign({UserId: isUser._id , username:isUser.username}, `${SecretKey}`, {
-                        expiresIn:'1h'
+                const passVerify = await bcrypt.compare(password , isUser.password);
+                if (passVerify) {
+                 
+                    const token = jwt.sign({userId: isUser._id, username: isUser.username}, `${SecretKey}` , {
+                        expiresIn: '1h', 
                     });
-                    res.status(200).json({message: 'Login success', token});
+
+                    res.status(200).json({ message: 'Login success' , token});
                 }
                 else{
-                    res.json({message: 'password does not match'})
+                    res.json({ message: 'Password Does Not Match'});
                 }
+
             }
             else{
-                res.json({message:'user not found'});
+                res.json({message:'user not exists please signup first'});
             }
         }
         else{
-            res.json({message:'all feilds required'});
+            res.json({message:'please fill all feilds'});
         }
     }
+
     catch(error){
         console.log(error);
-
     }
-}
+};
+
 
 module.exports = handleLogin;
