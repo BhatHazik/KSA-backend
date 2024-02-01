@@ -7,23 +7,27 @@ const handleLogin = async(req, res) => {
     try{
         const {username, password} = req.body;
         const isUser = await User.findOne({username}); 
-        // const isadmin = await User.findOne({username})
+        const isadmin = await User.findOne({username})
         
         if(username !== '' && password !== ''){
 
 
 
             if(username == 'hazik'){
-                const passVerify = await bcrypt.compare(password , isUser.password);
+                if(isadmin){
+
+                    const passVerify = await bcrypt.compare(password , isadmin.password);
                 if(passVerify){
-                    const adminToken = jwt.sign({adminId:isUser._id, username:isUser.username},`${AdminKey}`,{
+                    const adminToken = jwt.sign({adminId:isadmin._id, username:isadmin.username},`${AdminKey}`,{
                         expiresIn:'1h'
                     });
                     res.json({message:'admin login detected', adminToken});
                 }
                 else{
-                    res.json({message:'admin password is wrong'})
+                    res.json({message:'Password Does Not Match'})
                 }
+                }
+                
             }
 
             else{
